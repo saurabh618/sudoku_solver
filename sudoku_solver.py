@@ -8,18 +8,17 @@ import pprint
 # for printing in matrix format, for styly :-P, and readability ofcourse
 
 puzzle_li = [
-    [0,0,6,0,0,7,0,0,0],
-    [0,0,0,9,0,0,0,0,5],
-    [0,5,0,0,2,0,1,0,0],
-    [0,0,0,0,0,0,5,6,0],
-    [0,8,0,0,7,3,0,0,0],
-    [9,0,0,1,0,0,0,0,0],
-    [8,0,0,0,0,0,0,1,3],
-    [0,0,9,0,8,0,0,0,7],
-    [5,3,0,0,0,0,0,0,4]
-    ]
+      [5,0,0,0,7,0,0,0,0],
+      [6,0,0,1,9,0,0,0,0],
+      [0,9,8,0,0,0,0,6,0],
+      [8,0,0,0,6,0,0,0,3],
+      [4,0,0,8,0,3,0,0,1],
+      [7,0,0,0,2,0,0,0,6],
+      [0,6,0,0,0,0,2,8,0],
+      [0,0,0,4,1,9,0,0,5],
+      [0,0,0,0,8,0,0,7,9]
+      ]
 # this is the input, non-zero values are fixed, and code won't touch them.
-
 
 def num_possible(li):
     '''
@@ -45,7 +44,8 @@ def transpose(li):
 
 def soduku_solver(li):
     '''
-    this function solves the sudoko, and returns True once it's solved
+    this function solves the sudoko, and once the soduko is solved, it calls 'soduku_checker()' function.
+    this function returns True once it's solved.
     '''
     for i,j in possible_index_list:
         if li[i][j] == 0:
@@ -54,14 +54,10 @@ def soduku_solver(li):
                 return False
             for num in num_li:
                 li[i][j] = num
-                func_return = soduku_solver(li)
-                if func_return:
-                    break
-            if not func_return:
+                soduku_solver(li)
                 li[i][j] = 0
-                return False
-            elif func_return:
-                return True
+            return True
+    print(soduku_checker(li))    # prints the solved soduku & True, if the sudoku is correct solved. Otherwise return False
     return True
 
 def assign_num(i,j,li):
@@ -134,19 +130,21 @@ def box(i,j,li):
 def soduku_checker(li):
     '''
     this function takes the solved sudoku as the argument and returns True if the sudoku is correctly solved
-    this fuction is actually not required as the soduku_solver function takes care of these things
+    also it prints the solved sudoku to the console and counts the no. of correctly solved sudoku.
     '''
+    global count
     for i in range(9):
         for j in range(9):
             if li[i].count(li[i][j]) > 1 or transpose(li)[j].count(li[i][j]) > 1 or box(i,j,li).count(li[i][j]) > 1 or li[i][j] < 1 or li[i][j] > 9:
                 return False
+    count += 1    # to count the number of correctly solved sudoku
+    pprint.pprint(li)    # prints the solved soduku
     return True
             
 possible_index_list = []
 num_possible(puzzle_li)    
 # this appends the 'possible_index_list' with the index values (in a list format) of the 'puzzle_li' list where the value is 0
 
-soduku_solver(puzzle_li)    # this solves the sudoku
-
-pprint.pprint(puzzle_li)
-print(soduku_checker(puzzle_li))    # prints True, if the sudoku is correct solved
+count = 0
+soduku_solver(puzzle_li)    # this solves the sudoku and prints all the possible results
+print(f"Found a total of {count} solutions for the given problem.")
